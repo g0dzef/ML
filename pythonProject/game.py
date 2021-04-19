@@ -62,8 +62,8 @@ def main(board):
             print("Ничья!")
             break
         else:
-            # check_data(2, "0")
-            bot()
+            check_data(2, "0")
+            # bot()
 
         win_game = check_win()
         if win_game:
