@@ -1,6 +1,6 @@
 # SkillFactory
 
-## Структура репозитория:
-- pythonProject, первый проект с игрой крестики-нолики
-- module_0, данная папка содержит в себе итоговое проект - "Самый быстрый старт"
-- module_1, данная папка содержит ноутбук с решением итогового проекта - "Кто хочет стать миллионером кинопроката"
+## Repository structure:
+- pythonProject, first project with a game of tic-tac-toe;
+- module_0, this folder contains the final project - "Самый быстрый старт";
+- module_1, this folder contains a jupyter notebook with a solutions of the final project - "Кто хочет стать миллионером кинопроката".
