@@ -256,6 +256,7 @@ tangled-up-in-unicode==0.1.0
 tblib @ file:///tmp/build/80754af9/tblib_1597928476713/work
 terminado==0.9.1
 testpath==0.4.4
+textblob==0.15.3
 thinc==8.0.8
 threadpoolctl @ file:///tmp/tmp9twdgx9k/threadpoolctl-2.1.0-py3-none-any.whl
 tifffile==2020.10.1
