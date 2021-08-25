@@ -1,1 +1,25 @@
+# Задание 4.1
+  SELECT city,
+         count(airport_name)
+  FROM dst_project.airports
+  GROUP BY city
+  HAVING count(airport_name) > 1
+  
+# Задание 4.2
+  ## Вопрос 1. Таблица рейсов содержит всю информацию о прошлых, текущих и запланированных рейсах. Сколько всего статусов для рейсов определено в таблице?
+    SELECT count(DISTINCT status)
+    FROM dst_project.flights
+  ## Вопрос 2. Какое количество самолетов находятся в воздухе на момент среза в базе (статус рейса «самолёт уже вылетел и находится в воздухе»).
+    SELECT count(*)
+    FROM dst_project.flights
+    WHERE status = 'Departed'
+  ## Вопрос 3. Места определяют схему салона каждой модели. Сколько мест имеет самолет модели 773 (Boeing 777-300)?
+    SELECT count(*)
+    FROM dst_project.seats
+    WHERE aircraft_code = '773'
+  ## Вопрос 4. Сколько состоявшихся (фактических) рейсов было совершено между 1 апреля 2017 года и 1 сентября 2017 года?
+    SELECT count(*)
+    FROM dst_project.flights
+    WHERE actual_arrival BETWEEN 'April 1,2017' AND 'September 1,2017'
+      AND status = 'Arrived'
 
