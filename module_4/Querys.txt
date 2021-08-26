@@ -131,8 +131,56 @@
     FROM dst_project.bookings
     
   ## Вопрос 3. Какой номер места был у пассажира с id = 4313 788533?
+  
     SELECT t.passenger_id,
            bp.seat_no
     FROM dst_project.tickets t
     JOIN dst_project.boarding_passes bp ON t.ticket_no = bp.ticket_no
     WHERE t.passenger_id = '4313 788533'
+    
+# Задание 5.1
+  ## Вопрос 1. Анапа — курортный город на юге России. Сколько рейсов прибыло в Анапу за 2017 год?
+  
+    SELECT count(*)
+    FROM dst_project.flights
+    WHERE arrival_airport = 'AAQ'
+    AND date_part('year', actual_arrival) = 2017
+    
+  ## Вопрос 2. Сколько рейсов из Анапы вылетело зимой 2017 года?
+  
+    SELECT count(*)
+    FROM dst_project.flights
+    WHERE departure_airport = 'AAQ'
+      AND date_part('year', actual_departure) = 2017
+      AND date_part('month', actual_departure) in (1,
+                                                   2,
+                                                   12)
+                                                   
+  ## Вопрос 3. Посчитайте количество отмененных рейсов из Анапы за все время.
+  
+    SELECT count(*)
+    FROM dst_project.flights
+    WHERE departure_airport = 'AAQ'
+    and status = 'Cancelled'
+    
+  ## Вопрос 4. Сколько рейсов из Анапы не летают в Москву?
+  
+    SELECT count(*)
+    FROM dst_project.flights
+    WHERE departure_airport = 'AAQ'
+      AND arrival_airport not in
+        (SELECT airport_code
+         FROM dst_project.airports
+         WHERE city = 'Moscow' )
+         
+  ## Вопрос 5. Какая модель самолета летящего на рейсах из Анапы имеет больше всего мест?
+  
+    SELECT *
+    FROM dst_project.aircrafts
+    WHERE aircraft_code in
+        (SELECT aircraft_code
+         FROM dst_project.flights
+         WHERE departure_airport = 'AAQ' )
+    ORDER BY 3 DESC
+    LIMIT 1
+
