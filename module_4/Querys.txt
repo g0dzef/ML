@@ -1,4 +1,5 @@
 # Задание 4.1
+
   SELECT city,
          count(airport_name)
   FROM dst_project.airports
@@ -7,19 +8,131 @@
   
 # Задание 4.2
   ## Вопрос 1. Таблица рейсов содержит всю информацию о прошлых, текущих и запланированных рейсах. Сколько всего статусов для рейсов определено в таблице?
+  
     SELECT count(DISTINCT status)
     FROM dst_project.flights
+    
   ## Вопрос 2. Какое количество самолетов находятся в воздухе на момент среза в базе (статус рейса «самолёт уже вылетел и находится в воздухе»).
+  
     SELECT count(*)
     FROM dst_project.flights
     WHERE status = 'Departed'
+    
   ## Вопрос 3. Места определяют схему салона каждой модели. Сколько мест имеет самолет модели 773 (Boeing 777-300)?
+  
     SELECT count(*)
     FROM dst_project.seats
     WHERE aircraft_code = '773'
+    
   ## Вопрос 4. Сколько состоявшихся (фактических) рейсов было совершено между 1 апреля 2017 года и 1 сентября 2017 года?
+  
     SELECT count(*)
     FROM dst_project.flights
     WHERE actual_arrival BETWEEN 'April 1,2017' AND 'September 1,2017'
       AND status = 'Arrived'
-
+  
+# Задание 4.3
+  ## Вопрос 1. Сколько всего рейсов было отменено по данным базы?
+  
+    SELECT count(*)
+    FROM dst_project.flights
+    WHERE status = 'Cancelled'
+    
+  ## Вопрос 2.  Сколько самолетов моделей типа Boeing, Sukhoi Superjet, Airbus находится в базе авиаперевозок?
+  
+    SELECT 'Boeing' model_name,
+                    count(*) COUNT
+    FROM dst_project.aircrafts
+    WHERE model like '%Boeing%'
+    UNION
+    SELECT 'Sukhoi Superjet' model_name,
+                             count(*) COUNT
+    FROM dst_project.aircrafts
+    WHERE model like '%Sukhoi Superjet%'
+    UNION
+    SELECT 'Airbus' model_name,
+                    count(*) COUNT
+    FROM dst_project.aircrafts
+    WHERE model like '%Airbus%'
+    
+  ## Вопрос 3.  В какой части (частях) света находится больше аэропортов?
+  
+    SELECT 'Asia' timezone_name,
+                  count(*)
+    FROM dst_project.airports
+    WHERE timezone like '%Asia%'
+    UNION
+    SELECT 'Europe' timezone_name,
+                    count(*)
+    FROM dst_project.airports
+    WHERE timezone like '%Europe%'
+    UNION
+    SELECT 'Australia' timezone_name,
+                       count(*)
+    FROM dst_project.airports
+    WHERE timezone like '%Australia%'
+    ORDER BY 2 DESC
+    
+  ## Вопрос 4. У какого рейса была самая большая задержка прибытия за все время сбора данных? Введите id рейса (flight_id).
+  
+    SELECT flight_id,
+           actual_arrival - scheduled_arrival
+    FROM dst_project.flights
+    WHERE actual_arrival - scheduled_arrival IS NOT NULL
+    ORDER BY 2 DESC
+    LIMIT 1
+    
+# Задание 4.4
+  ## Вопрос 1. Когда был запланирован самый первый вылет, сохраненный в базе данных?
+  
+    SELECT flight_id,
+           scheduled_departure
+    FROM dst_project.flights
+    ORDER BY 2
+    LIMIT 1
+    
+  ## Вопрос 2. Сколько минут составляет запланированное время полета в самом длительном рейсе?
+  
+    SELECT extract(epoch
+                   FROM (scheduled_arrival - scheduled_departure)) / 60
+    FROM dst_project.flights
+    ORDER BY 1 DESC
+    LIMIT 1
+    
+  ## Вопрос 3. Между какими аэропортами пролегает самый длительный по времени запланированный рейс?
+  
+    SELECT departure_airport || '-' || arrival_airport,
+           extract(epoch
+                   FROM (scheduled_arrival - scheduled_departure)) / 60
+    FROM dst_project.flights
+    ORDER BY 2 DESC
+    LIMIT 1
+    
+  ## Вопрос 4. Сколько составляет средняя дальность полета среди всех самолетов в минутах? Секунды округляются в меньшую сторону (отбрасываются до минут).
+  
+    SELECT avg(ftime)
+    FROM
+      (SELECT extract(epoch
+                      FROM (scheduled_arrival - scheduled_departure)) / 60 ftime
+       FROM dst_project.flights) a
+       
+# Задание 4.5
+  ## Вопрос 1. Мест какого класса у SU9 больше всего?
+  
+    SELECT fare_conditions,
+           count(*)
+    FROM dst_project.seats
+    WHERE aircraft_code = 'SU9'
+    GROUP BY fare_conditions
+    
+  ## Вопрос 2. Какую самую минимальную стоимость составило бронирование за всю историю?
+  
+    SELECT min(total_amount)
+    FROM dst_project.bookings
+    
+  ## Вопрос 3. Какой номер места был у пассажира с id = 4313 788533?
+    SELECT t.passenger_id,
+           bp.seat_no
+    FROM dst_project.tickets t
+    JOIN dst_project.boarding_passes bp ON t.ticket_no = bp.ticket_no
+    WHERE t.passenger_id = '4313 788533'
