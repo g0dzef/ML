@@ -186,3 +186,91 @@
     GROUP BY 1
     ORDER BY 2 DESC
     LIMIT 1
+  
+  ## Запрос на получение основных данных
+  
+    WITH main AS --основновная информация о перелётах
+      (SELECT flight_id,
+              flight_no,
+              aircraft_code,
+              EXTRACT(HOUR
+                      FROM actual_arrival-actual_departure)*60 + EXTRACT(MINUTE
+                                                                         FROM scheduled_arrival-scheduled_departure) scheduled_flight_time,
+              EXTRACT(HOUR
+                      FROM actual_arrival-actual_departure)*60 + EXTRACT(MINUTE
+                                                                         FROM actual_arrival-actual_departure) actual_flight_time,
+              departure_airport,
+              arrival_airport,
+              status
+       FROM dst_project.flights
+       WHERE departure_airport = 'AAQ'
+         AND (date_trunc('month', scheduled_departure) in ('2017-01-01',
+                                                           '2017-02-01',
+                                                           '2017-12-01'))
+         AND status not in ('Cancelled') ),
+         seats_info AS --информация об общем количестве мест для каждой модели самолёта и количестве мест для каждого класса
+      (SELECT aircraft_code,
+              count(CASE
+                        WHEN fare_conditions = 'Business' THEN 1
+                    END) business_seats,
+              count(CASE
+                        WHEN fare_conditions = 'Comfort' THEN 1
+                    END) comfort_seats,
+              count(CASE
+                        WHEN fare_conditions = 'Economy' THEN 1
+                    END) economy_seats,
+              count(seat_no) total_seats
+       FROM dst_project.seats
+       GROUP BY 1),
+         tickets_info AS --информация о количестве и стоимости проданных билетах с разделением на классы
+      (SELECT flight_id,
+              count(CASE
+                        WHEN fare_conditions = 'Business' THEN 1
+                    END) business_tickets,
+              count(CASE
+                        WHEN fare_conditions = 'Comfort' THEN 1
+                    END) comfort_tickets,
+              count(CASE
+                        WHEN fare_conditions = 'Economy' THEN 1
+                    END) economy_tickets,
+              count(ticket_no) total_tickets,
+              sum(CASE
+                      WHEN fare_conditions = 'Business' THEN amount
+                      ELSE 0
+                  END) business_amount,
+              sum(CASE
+                      WHEN fare_conditions = 'Comfort' THEN amount
+                      ELSE 0
+                  END) comfort_amount,
+              sum(CASE
+                      WHEN fare_conditions = 'Economy' THEN amount
+                      ELSE 0
+                  END) economy_amount,
+              sum(amount) total_amount
+       FROM dst_project.ticket_flights
+       GROUP BY 1),
+         fuel_consumption AS
+      (SELECT '733' AS aircraft_code,
+              2600 AS fuel_consumption_kg
+       UNION SELECT 'SU9' AS aircraft_code,
+                    1864 AS fuel_consumption_kg)
+    SELECT m.*,
+           a.city AS arrival_city,
+           f.fuel_consumption_kg,
+           s.business_seats,
+           s.comfort_seats,
+           s.economy_seats,
+           s.total_seats,
+           t.business_tickets,
+           t.comfort_tickets,
+           t.economy_tickets,
+           t.total_tickets,
+           t.business_amount,
+           t.comfort_amount,
+           t.economy_amount,
+           t.total_amount
+    FROM main m
+    LEFT JOIN seats_info s ON s.aircraft_code = m.aircraft_code
+    LEFT JOIN tickets_info t ON t.flight_id = m.flight_id
+    LEFT JOIN dst_project.airports a ON a.airport_code = m.arrival_airport 
+    LEFT JOIN fuel_consumption f ON f.aircraft_code = m.aircraft_code
