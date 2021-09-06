@@ -199,6 +199,7 @@
               EXTRACT(HOUR
                       FROM actual_arrival-actual_departure)*60 + EXTRACT(MINUTE
                                                                          FROM actual_arrival-actual_departure) actual_flight_time,
+              actual_arrival,
               departure_airport,
               arrival_airport,
               status
