@@ -256,6 +256,7 @@
        UNION SELECT 'SU9' AS aircraft_code,
                     1864 AS fuel_consumption_kg)
     SELECT m.*,
+           ac.model,
            a.city AS arrival_city,
            f.fuel_consumption_kg,
            s.business_seats,
@@ -275,3 +276,4 @@
     LEFT JOIN tickets_info t ON t.flight_id = m.flight_id
     LEFT JOIN dst_project.airports a ON a.airport_code = m.arrival_airport 
     LEFT JOIN fuel_consumption f ON f.aircraft_code = m.aircraft_code
+    LEFT JOIN dst_project.aircrafts ac ON ac.aircraft_code = m.aircraft_code
