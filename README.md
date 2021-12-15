@@ -7,4 +7,5 @@
 - module_2, this folder contains a jupyter notebook with a solutions of the final project - "EDA";
 - module_3, this folder contains a jupyter notebook with a solutions of the final project - "О вкусной и здоровой пище";
 - module_4, this folder contains a jupyter notebook with a solutions of the final project - "Авиарейсы без потерь";
-- module_5, this folder contains a jupyter notebook with a solutions of the final project - "Компьютер говорит НЕТ".
+- module_5, this folder contains a jupyter notebook with a solutions of the final project - "Компьютер говорит НЕТ";
+- module_6, this folder contains a jupyter notebook with a solutions of the final project - "Выбираем авто выгодно".
